@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="Cache-Control" content="no-transform" />
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta http-equiv="Content-Language" content="zh-CN" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+		<meta name="applicable-device" content="pc,mobile" />
+		<title>五笔打字练习</title>
+
+		<link rel="stylesheet" type="text/css" href="css/wubi.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="css/2.css" media="screen" />
+		<script type="text/javascript" src="js/jquery-2.2.4.min.js"></script>
+
+		<!-- 有用 -->
+		<script type="text/javascript">
+			var autoRun = null
+			var time = 0
+			var numAll = 0
+			var scrollHeight = 160
+			function changeText() {
+				clearText()
+				var txt = getObj('txtInput').value
+				txt = txt.replace(/rn/g, 'n')
+				var divTxt = getObj('divText').innerHTML
+				divTxt = divTxt.replace(/  /g, ' ')
+				divTxt = divTxt.replace(/   /g, ' ')
+				divTxt = divTxt.replace(/r/g, '')
+				divTxt = divTxt.replace(/n/g, '')
+				divTxt = divTxt.replace(/&nbsp;/g, ' ')
+				divTxt = divTxt.replace(/<BR>/g, 'n')
+				divTxt = divTxt.replace(/<br>/g, 'n')
+
+				var len = txt.trim().length
+				if (len % scrollHeight === 0 && len !== divMain.scrollTop && len !== 0) {
+					divMain.scrollTop += scrollHeight
+				}
+
+				var top = 18
+				var left = 0
+				var error = 0
+				var lost = 0
+				for (var i = 0; i < divTxt.length; i++) {
+					if (i >= txt.length + lost) {
+						break
+					}
+
+					var color = 'green'
+					if (txt.charAt(i - lost) != divTxt.charAt(i)) {
+						error++
+						color = 'red'
+					}
+
+					if (divTxt.charAt(i) == 'n' || divTxt.charAt(i) == 'r') {
+						if (divTxt.charAt(i) == 'n') {
+							top += 60
+							left = 0
+						}
+						continue
+					}
+
+					var charWidth = divTxt.charCodeAt(i) > 255 ? 24 : 13
+					var span = document.createElement('span')
+					span.style.position = 'absolute'
+					span.style.width = charWidth + 'px'
+					span.style.height = '24px'
+					span.style.top = top + 'px'
+					span.style.left = left + 'px'
+					span.style.zIndex = 1
+					span.style.backgroundColor = color
+					divMain.appendChild(span)
+
+					left += charWidth
+					if (left > 974 - charWidth) {
+						top += 60
+						left = 0
+						if (divTxt.charAt(i + 1) == ' ' || divTxt.charAt(i + 1) == 'n') {
+							i++
+							lost++
+						}
+					}
+				}
+				getObj('spanError').innerHTML = error
+				getObj('spanNum').innerHTML = txt.length
+				getObj('spanRate').innerHTML = Math.round(100 - (error / txt.length) * 100) + '%'
+				getObj('spanSpeed').innerHTML = Math.round((txt.length / time) * 60) + '字/分'
+			}
+
+			function selectText() {
+				var selText = getObj('selText')
+				var txt = getObj(selText.value).value
+				txt = txt.replace(/r/g, '')
+				txt = txt.replace(/n/g, '')
+				var divText = getObj('divText')
+				txt = txt.replace(/  /g, ' ')
+				txt = txt.replace(/   /g, ' ')
+				divText.innerHTML = txt
+				numAll = txt.length
+				getObj('spanAllNum').innerHTML = txt.length
+				getObj('btnStart').value = '开 始'
+				clearText()
+				getObj('spanError').innerHTML = '0'
+				getObj('spanTime').innerHTML = '0'
+				getObj('spanRate').innerHTML = '0'
+				getObj('spanSpeed').innerHTML = '0'
+				getObj('spanNum').innerHTML = '0'
+				getObj('txtInput').value = ''
+				getObj('txtInput').disabled = true
+				if (autoRun) {
+					window.clearInterval(autoRun)
+				}
+			}
+
+			function clearText() {
+				var divMain = getObj('divMain')
+				var spans = divMain.getElementsByTagName('span')
+				while (spans.length > 0) {
+					divMain.removeChild(spans[0])
+				}
+			}
+
+			function btnStartClick() {
+				if (autoRun) {
+					window.clearInterval(autoRun)
+				}
+				var btnStart = getObj('btnStart')
+				var txtInput = getObj('txtInput')
+				var divText = getObj('divText')
+				if (btnStart.value == '开 始') {
+					clearText()
+					txtInput.style.height = Math.max(500, divText.offsetHeight) + 'px'
+					txtInput.value = ''
+					txtInput.disabled = false
+					txtInput.focus()
+					getObj('spanError').innerHTML = '0'
+					getObj('spanTime').innerHTML = '0'
+					getObj('spanRate').innerHTML = '0'
+					getObj('spanSpeed').innerHTML = '0'
+					getObj('spanNum').innerHTML = '0'
+					numAll = 0
+					numError = 0
+					numInput = 0
+					btnStart.value = '结 束'
+					time = 0
+					autoRun = window.setInterval(timer, 1000)
+				} else {
+					btnStart.value = '开 始'
+				}
+			}
+
+			function timer() {
+				time++
+				var str = ''
+				var fen = Math.floor(time / 60)
+				if (fen > 0) {
+					str += fen + '分'
+				}
+				getObj('spanTime').innerHTML = str + (time - fen * 60) + '秒'
+				var txt = getObj('txtInput').value
+				txt = txt.replace(/rn/g, 'n')
+				getObj('spanSpeed').innerHTML = Math.round((txt.length / time) * 60) + '字/分'
+			}
+
+			function getObj(id) {
+				return document.getElementById(id)
+			}
+		</script>
+	</head>
+
+	<body>
+		<div class="container">
+			<main role="main">
+				<div class="clear"></div>
+				<div class="lis2">
+					<div class="row">
+						<div class="col-md-9">
+							<br />
+							<!-- <h1 align="center">五笔打字练习</h1>
+							<p class="alert alert-info">
+								这是一款五笔打字练习工具，可选择一级（二级、三级、全码）简码、易错字、词语、文章以及英文进行打字练习<font color="#FF0000">[下有字根表]</font>。
+							</p> -->
+							<hr />
+							<div class="X_center">
+								<select id="selText" onchange="selectText();">
+									<optgroup label="中文">
+										<option value="txtCh1">一级简码</option>
+										<option value="txtCh2">二级简码</option>
+										<option value="txtCh3">三级简码</option>
+										<option value="txtCh4">全码</option>
+										<option value="txtCh5">易错字</option>
+										<option value="txtCh6">二字词语</option>
+										<option value="txtCh7">三字词语</option>
+										<option value="txtCh8">四字词语</option>
+										<option value="txtCh9">多字词语</option>
+										<option value="txtCh10">文章练习</option>
+									</optgroup>
+									<optgroup label="英文">
+										<option value="txtEn1">Three passions</option>
+									</optgroup>
+								</select>
+								<input id="btnStart" onclick="btnStartClick();" type="button" value="开 始" class="btn_primary" />
+								　总字数:
+								<span id="spanAllNum">0</span>
+								键入字数:
+								<span id="spanNum">0</span>
+								错误数:
+								<span id="spanError">0</span>
+								正确率:
+								<span id="spanRate">0</span>
+								速度:
+								<span id="spanSpeed">0</span>
+								用时:
+								<span id="spanTime">0</span>
+							</div>
+
+							<div style="display: none">
+								<textarea id="txtCh1">
+这地我在工同要一是中上国的这地我在工同要一是中上这地我在这地我在这地我在工同要一是中上国的这地我在工同要一是中上这地我在这地我在工同要一是中上国的有主以产和不为了发人经民工同要一是中上国的有主以产和不为了发人这地我在工同要一是中上国的这地我在工同要一是中上这地我在这地我在工同要一是中上国的有主以产和不为了发人经民工同要一是中上国的有主以产和不为了发人经民国的有主以产和不为了发人经民有主以产和不为了发人经民经民国的有主以产和不为了发人经民有主以产和不为了发人经民工同要一是中上国的有主以产和不为了发人经民工同要一是中上国的有主以产和不为了发人经民国的有主以产和不为了发人经民有主以产和不为了发人经民</textarea
+								>
+								<textarea id="txtCh2">
+曲朵几开呀啊吧太顺戏邓红汉载地煤并左顾友大龙闻钱代他胡支城圾寺雪夫坳坟过无垢霜才增灰达春找报扫失批扩公珠仙亿分匀氏凶色然角针儿争欠镪久从化信外伙肛服肥侬进反拓扔持后年吉协南志赤原厅帮磁肆你伯休作们炙锭多铁钉冯冰亲籽糨米民毁好妈姑耻朱双参能驼允牟骠提扣押抽所搂近拉孙阳职阵陈子取承阴际卫耿产立妆闪北六出也奶寻姨叟强纪继引纱比纺缥张弱绿敢怪尖肖法宾宁江池小水浊当兴涨注客综约辽隐孤阿降联限队陛防录旭如婚姝杂九嫌妇臾姆妨烃类粗烛矣骈艰难驻居懚导怀收悄慢经顷旨绵给级结对驜避惭炎迷实安届忆宽字害家守屡忱懈怕怵必习恨愉尼心定宫军宙官灾之宛空它社炮煌灯烽料娄粉汪澡权械沁淡学光泊洒少洋下轼胃轩二间虎齰部吸叶呈员呆呼须肌甩膦爱胸遥及啼哪只哟嘛砂虹最紧晨归蛤昆景百鼐步匠皮睚眼具此眩苛攻明时量早蝗肯睦睛夺三丰理面成止盯睡瞳果昨暗燕切共药芳贞卢眯瞎餐睥膛胆右历李档式节芭基菜表革查可楷术曾舅妯刀灵巡骊驉骒台劝观马商交瓣估困力较仍全个偿介保佃直示朋肝且肿肋关前半闰站叫楞机杨炽灶业粘炒烟灿断杰棕构析林咪喧史听车四边罗斩枯渐行生处没同由轨办累罚记中吵物条第入晃昌乐赠内嶷凡旬名甸秒秋管称负包得功贡世蒌囝长季么知秀轻因芝区蝇曙遇晚虽七牙东划或吕邮凤央骨另财辊加男轴思辚迥崭册岂嶙迪风贩变决普帝这义峭则格样要衣计主让就刘训检画寂各务向采用胶妥脸脂秘宵审换折打手弛极村本相笔科委答线细纲屯到旧占卤天于为电显晕五不事现会与来琮列末玫平妻珍互玉</textarea
+								>
+								<textarea id="txtCh3">
+戒荫再刺丙丽规瓦亚涓溃渐汀进渴境替混河淅淋堆眺消沙晚易蛛颗晒蛇星暗昭蜂霁带豆盏埸翰圳染举淮喜雷灭殖残歹虚颇歧睹睛凸卡叔洚活洗省洛澳渊滗海滚泣滴滋井击雾老丧幸频列蒸运魂城牛扑捎撑挑泉挡尔滑油汕演浑沉深泡逃淘兆派汽激漂圭树顶埃去云震埯需椅棒楹枝杜栈填争急缷披看扯掉款博十坏溃渐滑油汕演浑沉沿汤泥淡浓尝枚栏榜校梯概根枪松槌桩锥坑坊雯桌战点眠浇洪涌泽治滩琪形武弄珙更吾束副勺哥远均坎坂霜霖考者柚枫贾札楼构柳板杆标材醋酸枉丁杯醒配返埃摊瓜拔振排兵掳龟案声琴颀扰丘皇扌岳抹挟玻正政歪否还理志亏块专壶索元雹空栖柯焚梦森栗婪桥格援摇技持盾擂质突窜穷窟穸窗穴穷锡句钏劬免链铡饭饿鑫多勿铂刎忽忽铁杀猎犯担揖捉操惟屁恼尺迟尽炬烧糊烦炉粮炫宽宏害宠欣拍逝白拆托诏府夜充诶诚钢惟屁恼粗烤精拐摁镐卵贸拭皂撕扛措描拒劳抠报抒择抬把摆舞押捆投帛缶缺摧气扬拨氧氛拟迫挥按控抵抑鬼撸抱炳凿粘爆炽烟火熔灮烯炮焰灼粕炸烙数粉尺迟尽炬烧糊烦粗仨段艳夏优丸娘佩侧催侨任伤途俄仪集食俯绀练绕缀弼绮绑缓组倨假阀痊阀益准背弟兹门闵闹奸尹姓群嫡娜女姆刃似倌低爷爸像斧父件侏傀体何叙借阶除颈劲驱骤驰又驿驼驹驳鸡矣验逡难余从怂份众伦化倾华佛货令依伪仿焦停叉辨姬奉奏秦雁礁袭丈矿腻服胎毁肤县身笛微币向奥筷而页碾砍原碑邦寿硇故碰磅曾端敝疯妹嫩娅姚妙妲巢邕劭恕鼠妮嫁婚姝妖闷旁奖将效净次闲新疾首痢疼痒痕瘦兼秘释番悉每第系往瓶冻逆闯痛差郑闳减着头羊羞助胆爵股受号咦距跨践跳踢跺忠踪跑跌路足跟叭嘴哨吵哩唱喝骂器她至玛吞琦青甫静球玩琶王环瑟既即始努怒垦姐退那娃黛牮供仓仔创俑俟俊仅佐但伸保倚做伏俘佣仁什候修俱仆铙呖顺哒喷送羝拳凑状毅遂兰斗闭凌装症辣盖章意竟问冲总况兽吱吐味嘲哮吨吓啧逐腕脆脾彩吼吗哞唉叹呃咕嘎饶管稀穆牧箱笑箭笠乎简冬乘很符答钮乌饥馆饮庞裔哀诗讲读伴位伞倍佼盆贫仇伊耸坐丛价谷座论玄访议萨莽冈刚网岁峥苦吕串品咒咽叨咐哈叭叱吡哼菲若咏嚎辄轻轰罪恩罢軖喘征重熏策辕转黑园团架输界购千利峰败赔短乔秒香秃犁复种积血备粤德毛迁先乖延稍箔秣算彼自乍片鼻息嘿病姜阒丫彰音别咖轮累崩骸巅周赎凯见呢咱咯响吃哦咩吖咬哪吊噗唤吻吹鸣啪啤啦噬唾腰乱适敌屿贱幅帽巾冂山岗矢笼盘般透航丢竺午田连衔称移黎稳特御软赚肉毗辙嵌戝典岩炭崔丹升径私舌鸭暂略图圈畔较囡嘶喵唠哎哄叩骑勇通圣邰骡观骣巴乭尤万碗确爽叽呐呗叼嘱辆罩回贺迦项其菜散藤甘勒靳某著鞭芋蕙莱苹臣牙范薄荡落茫莫萌草葛蓝苗莲萝菌苏英黄艺巨忒蒙营劳荧荣芪殴菊欧获艾匹菘医董莉薇莓蒂蒋薪菇茛萧苍巷茶荼芬巫花药陈耶聚随际陆陵耳隔陋函逊陧职孔院陶聊陷孤陪附险</textarea
+								>
+								<textarea id="txtCh4">
+剥堡彦秧佯仰养漾邀尧耀饱豹悲卑皑忍漱腋颐遗疑已屹逸肄债挣徵整橥麈煮疰住帧诤埴侄植蜘帙郅吟耍衰馅寨毡鹧畛臻镇赈筝钲湘谐蟹毯誊剔题泳悠糟枣躁噪造贼犹游淤榆愚俞热腮塞莎赏贪蘸掌仗幛照遮磔褶祯斟箴瘫铣虾阎掩逾渝渔娱雨熄媳泄韧筒偷徒沃呜芜狭舷霞辖蹄惋望忘妄卧惜刑阉蜒颜涎献泻屑辛猩捂坞悟熙西夕土矮俺岸薯署戍墅酞坍赛剃甜舔贴廷嚏涕颓褪臀谁舜蹋踏泰鸵挖洼豌挽庭挺兔推桑诵艘酥俗速塑宿穗违围唯纬喂尉文紊窝斡搔骚凹敖厨袒探堂棠躺烫熬翱傲捌跋擞嗽拜伎剂嘉朔斯饲巳塔獭佳荚颊甲监煎肩硷拣捡俭剪鉴键舰饯溅涧建酱骄娇搅矫侥脚饺剿教酵窖秸街劫竭诫筋金今津晋惊警竞窘韭酒救狙踞眷卷撅抉掘觉诀钧君浚郡揩勘糠抗靠咳恳恐口寇哭酷垮侩框窥奎魁坤赖篮阑览懒烂郎酪蕾垒冷厘狸漓鲤礼励镰廉怜敛炼凉粱两晾燎潦裂烈邻赁拎菱零龄铃伶羚岭领溜馏留瘤漏芦颅庐虏麓露潞旅律滦掠裸买卖脉瞒馒满漫氓忙猫茅卯貌酶霉美寐猛靡糜谜蜜冕勉缅渺蔑敏命谬摸摹膜磨摩魔墨默牡墓暮幕募慕木目拿耐挠匿蔫拈撵捻念酿鸟捏孽啮涅您疟懦鸥藕呕爬牌徘潘磐判叛耪刨裴沛抨澎彭蓬篷坯劈譬篇偏骗飘瓢票撇瞥萍凭泼婆魄蒲埔圃浦期欺凄奇讫恰扦签仟黔遣趋蛆躯惹堰樱鹰莹赢影庸蛹域吁喻峪愈欲狱誉垣圆猿愿曰跃耘韵砸攒赞遭怎渣咋窄桎骘掷智帜痔踬螽踵仲州诌酎籀翥抓爪颛啭涿咨资镯恣腙粽揍卒俎镞阻纂缵攥丕鬲噩禺卮囟胤馗毓睾躅芈孛啬厮靥赝匾赜卦刭刳挎刿剌剞剜仫伛仵伧攸佟佶鲻俦俪俅俜俸倩俳倏偃偕偎偬傥傩傺僖儆僭僬儇佘佥龠汆兮馘冁匍凫兕亳衮袤脔裒禀嬴蠃羸讵诋诎诓诔诖诜诰浞谀谂谄谌谔谕谛谝谧蛰谮谯谲谵谶卺阪阽陔陲隈邬邴邳邸郏郐郦郢郜坩坫垆坨垴垓埘芙芫芸芰芮苁芩芴茌苻苓茑茚茆茔苕荜莒茴莛荞荏荇荃荟茗荠茭荩荬荪莰荸莳莅莶莩莸荻莞菁萏菸菅菀菡葜葑葚蒇蒈蒉葸萼萱葭甄蓠蒡蒗揲揠揄揞摒揆摅甙吒呔呙咔呤咚咝咭哔呲咿哙咤唔哳唧喏啕唿啶唳啜喋嗒喱喈啻嗟喔嗪嗷嗉嘟嗑嗬嗔嗦嗝嗄嗯嗨嗤嘈嘁囗囵徭衢犰犴犷犸狃狍狨狯狩狲狴狷狳猃狺狻猗猓猡猊猞猝猕饨饩饪饫饬饷饽馄馊馍馐馑馓馕庠庹庵庾赓廑廪怏怿恸恹恪悖悚悝悻悱悴洧洇洎洫浍浏浒浔洳涑浯浜浠浣淇淞渎淠淙渫湮湫湟溆湓渲滟溘漭滢溥溧溽溷溴溏溟潆潇漤漕滹漶潋迕迮逅逋逦逑逖逵逭逯嫒嫱嫦嫜嬗嬖孥孑骁骐追躜幺巛琊瑁瑗瑷韬杌杓杈枇枧杵枭苎柰柩栌柝柃柽桀梏笫楮笊镕椋楗楱椹榄榘槎蓁榧榫槁槊榕槭樗潴槲樾檠橐樵檎殁殇殄殍殪轳轷贽辁氲攵敕敫牍牒牖虢肓赘胪胂祗胲腈腌腓腱腼腧塍媵膂滕雉膪臌臊欤欷欹歃歆歙飑飒飕飙彀觳斐齑焘煦熹扃扈禳忑恝恚恧恁悫愆愍慝憩憝懋懑戆聿淼砉砜砝砹砺砥黻黼眚眢睑睇睢睿瘴钚钤钪钰狰钸钹钺铈铋铐铑铕铗铘铞铟猪铤铥铪铯铼铽锆锇锍锎锏锒锔锖锝镱镲镳衷矧置姊嵇稃稞稔穑黏馥皈皓鹚鹜鹞鹣鹦鹨鹩鹪鹫鹬鹱鹭鹳疒疠疣疴痄痂痖痍痨痦舳痱瘀瘅瘌瘗瘥窨窳衲衽衿裆袷袼裉裣裥裱褚裼裾裰褙褓褊褴褫赭襦襻皴矜秭耖耢耥耩耋聃聆聱顸颃颌颏颔颚砖颞颟颡颢颥颦虿虺蚍蚪蚩蚱蚯蛉蛏蛩蛲痣蜓蛞蜃肇蜣蜻蜥蜚蜴蜩蜷蝽蝾蝠蝰蝮蝓蝣蝙蝥螓螯螨蟒蟆螅螭螗笸笪笙笳筚筅筵筌筠筻筲箦箧箬箝翩翮翳綦綮跷跸跣跹跻跤</textarea
+								>
+								<textarea id="txtCh5">
+登忘童翔云去升逃趟养才材造牟壬匕插羌矢尤龙告床萁扎血基再冉今卖巾疗止候既丹幼幼幻竞竟冬灭夫无羊末未廿甘万带余佘笛忘千午姝朱夭昔幻幼世忘亡今令羌牛卷廷凹匆孕呕巨疟予兰千冉今万尤龙厘孔汹曳拽亡卞今令午插基再告靠痈佣尚刁连余岁汇卸甲哪凹厅兰尚兆桃那翔尚乡汹凶斗匕乐心央垂年特单整盥幻幼哦丫斗曳方忘羌拽仰刀物半美每鸟岛乞贵泄血其萁徒整汝翟仑看着乞虏麦扇尊兄笆尔巨世亏羌即既弟酒即凸九力刃肆疟迫亨戒戎上下卞卡卮县且套猴午千乡汹凶斗缺鞯俦农槽曹笛廷壬芦厘孔兄笆见击苟买卖心牟牛悬竺佯羊洋美飞昏妄里冗兄痈买驰先手齿喜绝干恢啤婢啤亏厌库美鱼予预岩芜芫君刁怯农连卷藏姝牌贵州洲连屈出汇泄庸尔乐乎聿泄世己已凸场诀犯亨享兔免勿巳享趟皿四酆笏瘴誉子朱夭矢美乞七羊末未廿甘匕无刀带睡垂年特单制余佘翔见击告床萁扎血九力刃肆怎翟茂勘片羸古饰饭掘怨苑具誉泄亡尔妄亡库屎巨世判孕单笆巧岁斗令今肩户尸</textarea
+								>
+								<textarea id="txtCh6">
+认清 论断 论述 讹诈 文职 方法 落实 落空 茫然 落后 东西 落选 东部 范例 薄弱 东京 东方 萌芽 草鞋 草药 莫大 草地 蓝天 蓝图 草图 草帽 草案 蓝色 慕名 幕后 募捐 草拟 摹仿 草率 勤劳 文字 言辞 文章 文集 诠注 腐烂 认得 论文 文联 文学 方案 广告 访问 广度 夜里 认定 夜间 庇护 广大 广泛 谅解 文选 文娱 言语 论题 夜空 座次 谐和 方面 文明 方针 议程 方便 文盲 夜晚 认错 座位 畜牧 文坛 议题 广播 方向 文件 言谈 认罪 夜色 腐化 谐调 文献 议员 文摘 文物 文体 文豪 认输 腐蚀 诊费 方式 广场 方圆 广柑 文笔 文凭 广义 认帐 论据 认识 文革 文教 庐山 广西 文科 方位 广州 腐败 腐朽 认为 广东 文武 文风 文本 文稿 议价 议论 诊断 认可 论调 文艺 文具 文书 文档 广阔 文化 言论</textarea
+								>
+								<textarea id="txtCh7">
+黄花菜 工艺品 茫茫然 芭蕾舞 劳务费 医药费 茅台酒 老大爷 劳动者 东南亚 工具书 董事会 共青团 世界观 医学院 工学院 劳动力 艺术品 艺术家 获得者 共产党 营养品 工商业 东半球 甘肃省 河南省 菜市场 同性恋 孤儿院 对不起 对角线 通知书 通讯员 参议院 圣诞树 左右手 大专生 本科生 成都市 太原市 三环路 太平间 历史性 三轮车 大中型 太平洋 三角形 面包车 大气压 万年历 大自然 有效期 三门峡 大部分 百分数 大众化 成绩单 朋友们 老太太 老太婆 教研室 老百姓 运动员 运动场 二进制 十进制 进一步 地下室 老天爷 喜洋洋 干电池 地中海 井冈山 吉祥物 专案组 二把手 走后门 无所谓 动植物 无产者 未婚妻 示意图 无线电 理工科 青春期 开场白 政治犯 一览表 数据表 天安门 形容词 更年期 五指山 一等品 一个样 致命伤 天文台 死亡率 上下班 小朋友 水平面 小轿车 小数点 游乐园 少年宫 电风扇 日用品 日光灯 电视台 日记本</textarea
+								>
+								<textarea id="txtCh8">
+花天酒地 惹是生非 东山再起 或多或少 世外桃源 刮目相看 矮子看戏 冷眼静看 看生见长 看朱成碧 看文老眼 看菜吃饭 马上看花 左顾右盼 东张西望 刮目相看 走马观花 另眼相看 高瞻远瞩 狗眼看人 目不转睛 傍观冷眼 迟疑观望 明察秋毫 先睹为快 观隅反三 面面相觑 一目十行 一心一意 三心二意 五光十色 五颜六色 一路平安 狼吞虎咽 龙飞凤舞 鸡鸣狗吠 惊弓之鸟 漏网之鱼 害群之马 胆小如鼠 如虎添翼 如鱼得水 人声鼎沸 若隐若现 昂首东望 风平浪静 水天相接 横贯江面 漫天卷地 人声鼎沸 山崩地裂 不容置疑 神秘莫测 神来之笔 千姿百态 对症下药 悲欢离合 百花齐放 大有可为 面目一新 万水千山 大显身手 无动于衷 喜形于色 无恶不作 无济于事 一目了然 来日方长 天罗地网 一团和气 班门弄斧 不入虎穴 不相上下 津津有味 清华大学 淋漓尽致 光明正大 兴风作浪 当务之急 海阔天空 活灵活现 里应外合 叶落归根 患难之交 别开生面 罪魁祸首 国计民生 轩然大波 情投意合 心血来潮 冷嘲热讽 前无古人 中西合璧 荒无人烟 举世瞩目 区区小事</textarea
+								>
+								<textarea id="txtCh9">
+摸不着头脑 有一搭没一搭 小不忍则乱大谋 桃李满天下 长江后浪推前浪 二桃杀三士 一言以蔽之 不许百姓点灯 喜马拉雅山 一鼻孔出气 泰坦尼克号 一个萝卜一个坑 毕达哥拉斯 临时抱佛脚 拆东墙补西墙 慢工出细活 放之四海而皆准 天安门广场 前言不搭后语 远亲不如近邻 鸡蛋里挑骨头 珠穆朗玛峰 求人不如求己 树倒猢狲散 拉大旗作虎皮 斯堪的纳维亚 横挑鼻子竖挑眼 不足为外人道 八九不离十 不食人间烟火 明知山有虎 十年如一日 翻脸不认人 家丑不可外扬 一问三不知 精神分裂症 日久见人心 针尖对麦芒 赔了夫人又折兵 以小人之心 吹胡子瞪眼 巧妇难为无米之炊 饱暖思淫欲 柴可夫斯基 不得已而为之 空口说白话 物以稀为贵 人不可貌相 三句不离本行 有过之而无不及 吃力不讨好 人人得而诛之 竹篮打水一场空 习惯成自然 冒天下之大不韪 常言说得好 兵败如山倒 打蛇打七寸 心有余而力不足 行行出状元 风水轮流转 敢怒而不敢言 身在曹营心在汉 布宜诺斯艾利斯 赶鸭子上架 费力不讨好 防患于未然 幼发拉底河 山雨欲来风满楼 一锤子买卖 赤道几内亚 无可奈何花落去 埃塞俄比亚 高处不胜寒 踏破铁鞋无觅处 来而不往非礼也 天字第一号 无政府主义 车到山前必有路 无风三尺浪 几十年如一日</textarea
+								>
+								<textarea id="txtCh10">
+五笔在中国是一种很流行的输入法。五笔输入法采用的编码规则是基于汉字的基形或笔画形。五笔和其他基于形状的输入法的主要优点之一是重复率非常低。这一特征在拼音输入系统中是没有的，这意味着只有一两个汉字由一个五笔键序列表示。所以您可以更快地输入文本。新的激进或根源机制是发明五笔的王永民教授发明的专利技术。永敏教授从旧机制开发出来。该机制已发展成为兼容简体中文和繁体中文的新编码系统。使用相同的编码和输入规则。五笔的主要特征之一是最后笔画字形识别码，用于区分相似形状的字符。根据最后一个部首的形状分配识别码。识别码的目的是帮助用户在三个不同的层次上掌握五笔输入法。键入时，字符编码将显示在选择重复代码窗口中。此功能可以帮助您掌握汉字的编码方法。此外，您可以随时使用大写或小写Z键作为通配符。Z是唯一未映射到五笔中的角色的键。为了帮助您学习使用五笔，您可以按Z键查询系统输入代码。</textarea
+								>
+								<textarea id="txtEn1">
+If you type Chinese on your computer, you most likely use a pinyin-based input method, or some other phonetic typing system. This is an obvious choice as it’s easy to learn and goes hand in hand with your studies of Chinese pronunciation.However, you might start to notice that typing characters is not beneficial for your ability to write them, and the time spent typing may even detract from valuable writing time. Entering Chinese characters through phonetic input methods can also be slow, as there is so much ambiguity for each syllable.The Wubi input method solves these problems. The difference is that it’s a shape-based input method (of which there are many - Wubi is just the one I would recommend). Rather than typing in the pronunciation of characters you want to input, you hit keys assigned to particular strokes or shapes.</textarea
+								>
+							</div>
+
+							<div class="wrap" style="width: 1000px; padding-left: 20px; background-color: #fff; margin: 0 auto">
+								<div id="divMain" style="position: relative; height: 400px; width: 1000px; overflow-y: scroll; border-radius: 5px">
+									<textarea
+										id="txtInput"
+										disabled
+										onkeyup="changeText();"
+										style="
+											word-break: break-all;
+											word-wrap: break-word;
+											width: 40.29em;
+											word-spacing: normal;
+											letter-spacing: 0;
+											margin: 0;
+											border: none;
+											position: absolute;
+											top: 30px;
+											left: 0px;
+											height: 500px;
+											overflow-y: hidden;
+											color: #444;
+											line-height: 60px;
+											font-family: Consolas;
+											font-size: 24px;
+											outline: none;
+											background-color: transparent;
+										"
+									></textarea>
+									<div
+										id="divText"
+										onclick="getObj('txtInput').focus();"
+										style="
+											z-index: 2;
+											word-spacing: 0;
+											letter-spacing: 0px;
+											word-break: break-all;
+											word-wrap: break-word;
+											position: absolute;
+											padding: 0;
+											margin: 0;
+											left: 0px;
+											width: 40.49em;
+											color: #444;
+											line-height: 60px;
+											font-family: Consolas;
+											font-size: 24px;
+										"
+									></div>
+								</div>
+							</div>
+							<div class="line_D_div"><br /><img src="image/zaixianwubi.jpg" alt="练习字根表" /></div>
+							<script type="text/javascript">
+								selectText()
+							</script>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+		<br />
+
+		<!-- <div class="backtop">
+			<a title="反回顶部">TOP</a>
+		</div> -->
+		<!-- <script type="text/javascript" src="js/leonhere.js"></script> -->
+	</body>
+</html>
