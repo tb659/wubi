@@ -11,6 +11,10 @@ selectText()
 
 function changeText() {
 	clearText()
+	if (!autoRun) {
+		autoRun = setInterval(timer, 1000)
+	}
+
 	var txt = getObj('txtInput').value
 	txt = txt.replace(/rn/g, 'n')
 	var divTxt = getObj('divText').innerHTML
@@ -28,7 +32,7 @@ function changeText() {
 	}
 
 	if (txt.trim().length === divTxt.length && autoRun) {
-		window.clearInterval(autoRun)
+		clearInterval(autoRun)
 	}
 
 	var top = 18
@@ -83,6 +87,7 @@ function changeText() {
 
 function selectText() {
 	var selText = getObj('selText')
+	var txtInput = getObj('txtInput')
 	var txt = getObj(selText.value).value
 	txt = txt.replace(/r/g, '')
 	txt = txt.replace(/n/g, '')
@@ -92,17 +97,18 @@ function selectText() {
 	divText.innerHTML = txt
 	numAll = txt.length
 	getObj('spanAllNum').innerHTML = txt.length
-	getObj('btnStart').value = '开 始'
 	clearText()
+	txtInput.style.height = Math.max(500, divText.offsetHeight) + 'px'
+	txtInput.value = ''
+	txtInput.disabled = false
 	getObj('spanError').innerHTML = '0'
 	getObj('spanTime').innerHTML = '0'
 	getObj('spanRate').innerHTML = '0'
 	getObj('spanSpeed').innerHTML = '0'
 	getObj('spanNum').innerHTML = '0'
 	getObj('txtInput').value = ''
-	getObj('txtInput').disabled = true
 	if (autoRun) {
-		window.clearInterval(autoRun)
+		clearInterval(autoRun)
 	}
 }
 
@@ -114,34 +120,22 @@ function clearText() {
 	}
 }
 
-function btnStartClick() {
-	if (autoRun) {
-		window.clearInterval(autoRun)
-	}
-	var btnStart = getObj('btnStart')
-	var txtInput = getObj('txtInput')
-	var divText = getObj('divText')
-	if (btnStart.value == '开 始') {
-		clearText()
-		txtInput.style.height = Math.max(500, divText.offsetHeight) + 'px'
-		txtInput.value = ''
-		txtInput.disabled = false
-		txtInput.focus()
-		getObj('spanError').innerHTML = '0'
-		getObj('spanTime').innerHTML = '0'
-		getObj('spanRate').innerHTML = '0'
-		getObj('spanSpeed').innerHTML = '0'
-		getObj('spanNum').innerHTML = '0'
-		numAll = 0
-		numError = 0
-		numInput = 0
-		btnStart.value = '结 束'
-		time = 0
-		autoRun = window.setInterval(timer, 1000)
-	} else {
-		btnStart.value = '开 始'
-	}
-}
+var btnStart = getObj('btnStart')
+var txtInput = getObj('txtInput')
+var divText = getObj('divText')
+clearText()
+txtInput.style.height = Math.max(500, divText.offsetHeight) + 'px'
+txtInput.value = ''
+txtInput.disabled = false
+getObj('spanError').innerHTML = '0'
+getObj('spanTime').innerHTML = '0'
+getObj('spanRate').innerHTML = '0'
+getObj('spanSpeed').innerHTML = '0'
+getObj('spanNum').innerHTML = '0'
+numAll = 0
+numError = 0
+numInput = 0
+time = 0
 
 function timer() {
 	time++
@@ -158,4 +152,13 @@ function timer() {
 
 function getObj(id) {
 	return document.getElementById(id)
+}
+
+document.addEventListener('keyup', handlePause)
+
+function handlePause(e) {
+	if (e.code === 'F8' && autoRun) {
+		clearInterval(autoRun)
+		autoRun = null
+	}
 }
