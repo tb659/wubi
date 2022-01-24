@@ -5,8 +5,25 @@ dataKey.forEach(function (item, index) {
 var autoRun = null
 var time = 0
 var numAll = 0
+var numError = 0
 var scrollHeight = 160
+var numInput = 0
 
+var txtInput = getObj('txtInput')
+var divText = getObj('divText')
+
+txtInput.value = ''
+txtInput.disabled = false
+txtInput.style.height = Math.max(500, divText.offsetHeight) + 'px'
+txtInput.focus()
+
+getObj('spanError').innerHTML = '0'
+getObj('spanTime').innerHTML = '0'
+getObj('spanRate').innerHTML = '0'
+getObj('spanSpeed').innerHTML = '0'
+getObj('spanNum').innerHTML = '0'
+
+clearText()
 selectText()
 
 function changeText() {
@@ -33,6 +50,11 @@ function changeText() {
 
 	if (txt.trim().length === divTxt.length && autoRun) {
 		clearInterval(autoRun)
+	}
+	if (!txt.length) {
+		clearText()
+		clearInterval(autoRun)
+		getObj('spanTime').innerHTML = '0'
 	}
 
 	var top = 18
@@ -81,7 +103,7 @@ function changeText() {
 	}
 	getObj('spanError').innerHTML = error
 	getObj('spanNum').innerHTML = txt.length
-	getObj('spanRate').innerHTML = Math.round(100 - (error / txt.length) * 100) + '%'
+	getObj('spanRate').innerHTML = txt.length ? Math.round(100 - (error / txt.length) * 100) + '%' : '0'
 	getObj('spanSpeed').innerHTML = Math.round((txt.length / time) * 60) + '字/分'
 }
 
@@ -101,6 +123,7 @@ function selectText() {
 	txtInput.style.height = Math.max(500, divText.offsetHeight) + 'px'
 	txtInput.value = ''
 	txtInput.disabled = false
+	txtInput.focus()
 	getObj('spanError').innerHTML = '0'
 	getObj('spanTime').innerHTML = '0'
 	getObj('spanRate').innerHTML = '0'
@@ -119,24 +142,6 @@ function clearText() {
 		divMain.removeChild(spans[0])
 	}
 }
-
-var btnStart = getObj('btnStart')
-var txtInput = getObj('txtInput')
-var divText = getObj('divText')
-clearText()
-txtInput.style.height = Math.max(500, divText.offsetHeight) + 'px'
-txtInput.value = ''
-txtInput.disabled = false
-getObj('spanError').innerHTML = '0'
-getObj('spanTime').innerHTML = '0'
-getObj('spanRate').innerHTML = '0'
-getObj('spanSpeed').innerHTML = '0'
-getObj('spanNum').innerHTML = '0'
-numAll = 0
-numError = 0
-numInput = 0
-time = 0
-
 function timer() {
 	time++
 	var str = ''
@@ -162,3 +167,27 @@ function handlePause(e) {
 		autoRun = null
 	}
 }
+
+var info = ''
+var l = 0
+// for (let i = 0; i < 96; i++) {
+// 	for (let j = 0; j < 124; j++) {
+// 		if (i % 2 === 0 && j % 2 === 0 && j <= 60 && j >= 40 && i >= 10 && i <= 20) {
+// 			l++
+// 			info += `
+// [OFFSET${1000 + l}]
+// POS=${i > 47 ? i - 96 : i},${j > 61 ? j - 124 : j}
+// 			`
+// 		}
+// 	}
+// }
+for (let i = 0; i < 25; i++) {
+	l++
+	info += `
+[STYLE${800 + l}]
+INFO=五笔
+NM_IMG=wubi,${i + 1}
+HL_IMG=wubi,${i + 1}
+	`
+}
+console.log(info)
