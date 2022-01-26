@@ -55,6 +55,7 @@ function changeText() {
 		clearText()
 		clearInterval(autoRun)
 		getObj('spanTime').innerHTML = '0'
+		autoRun = null
 	}
 
 	var top = 18
@@ -167,27 +168,3 @@ function handlePause(e) {
 		autoRun = null
 	}
 }
-
-var info = ''
-var l = 0
-// for (let i = 0; i < 96; i++) {
-// 	for (let j = 0; j < 124; j++) {
-// 		if (i % 2 === 0 && j % 2 === 0 && j <= 60 && j >= 40 && i >= 10 && i <= 20) {
-// 			l++
-// 			info += `
-// [OFFSET${1000 + l}]
-// POS=${i > 47 ? i - 96 : i},${j > 61 ? j - 124 : j}
-// 			`
-// 		}
-// 	}
-// }
-for (let i = 0; i < 25; i++) {
-	l++
-	info += `
-[STYLE${800 + l}]
-INFO=五笔
-NM_IMG=wubi,${i + 1}
-HL_IMG=wubi,${i + 1}
-	`
-}
-console.log(info)
