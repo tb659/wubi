@@ -8,6 +8,7 @@ var numAll = 0
 var numError = 0
 var scrollHeight = 160
 var numInput = 0
+var run = false
 
 var txtInput = getObj('txtInput')
 var divText = getObj('divText')
@@ -28,8 +29,9 @@ selectText()
 
 function changeText() {
 	clearText()
-	if (!autoRun) {
+	if (!run) {
 		autoRun = setInterval(timer, 1000)
+		run = true
 	}
 
 	var txt = getObj('txtInput').value
@@ -48,14 +50,18 @@ function changeText() {
 		divMain.scrollTop += scrollHeight
 	}
 
-	if (txt.trim().length === divTxt.length && autoRun) {
+	if (txt.trim().length === divTxt.length && run) {
 		clearInterval(autoRun)
+		run = false
 	}
 	if (!txt.length) {
 		clearText()
 		clearInterval(autoRun)
 		getObj('spanTime').innerHTML = '0'
-		autoRun = null
+		run = false
+		time = 0
+	} else {
+		run = true
 	}
 
 	var top = 18
@@ -105,7 +111,7 @@ function changeText() {
 	getObj('spanError').innerHTML = error
 	getObj('spanNum').innerHTML = txt.length
 	getObj('spanRate').innerHTML = txt.length ? Math.round(100 - (error / txt.length) * 100) + '%' : '0'
-	getObj('spanSpeed').innerHTML = Math.round((txt.length / time) * 60) + '字/分'
+	getObj('spanSpeed').innerHTML =  time ? Math.round((txt.length / time) * 60) : 0 + '字/分'
 }
 
 function selectText() {
@@ -131,8 +137,10 @@ function selectText() {
 	getObj('spanSpeed').innerHTML = '0'
 	getObj('spanNum').innerHTML = '0'
 	getObj('txtInput').value = ''
-	if (autoRun) {
+	if (run) {
 		clearInterval(autoRun)
+		run = false
+		time = 0
 	}
 }
 
@@ -163,8 +171,8 @@ function getObj(id) {
 document.addEventListener('keyup', handlePause)
 
 function handlePause(e) {
-	if (e.code === 'F8' && autoRun) {
+	if (e.code === 'F8' && run) {
 		clearInterval(autoRun)
-		autoRun = null
+		run = false
 	}
 }
