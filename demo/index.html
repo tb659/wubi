@@ -1,121 +1,152 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<meta http-equiv="Cache-Control" content="no-transform" />
-		<meta http-equiv="Cache-Control" content="no-siteapp" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-		<meta http-equiv="Content-Language" content="zh-CN" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-		<meta name="applicable-device" content="pc,mobile" />
-		<title>五笔打字练习</title>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="Content-Language" content="zh-CN" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta name="applicable-device" content="pc,mobile" />
+    <title>五笔打字练习</title>
 
-		<link rel="stylesheet" type="text/css" href="css/wubi.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="css/2.css" media="screen" />
-		<link rel="stylesheet" type="text/css" href="css/index.css" media="screen" />
-		<script type="text/javascript" src="js/jquery-2.2.4.min.js"></script>
-		<script type="text/javascript" src="js/data.js"></script>
-	</head>
+    <link rel="stylesheet" type="text/css" href="css/wubi.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="css/2.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" media="screen" />
+    <script type="text/javascript" src="js/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="js/data.js"></script>
+  </head>
 
-	<body>
-		<div class="container">
-			<main role="main">
-				<div class="clear"></div>
-				<div class="lis2">
-					<div class="row">
-						<div class="col-md-9">
-							<br />
-							<!-- <h1 align="center">五笔打字练习</h1>
+  <body>
+    <div class="container">
+      <main role="main">
+        <div class="clear"></div>
+        <div class="lis2">
+          <div class="row">
+            <div class="col-md-9">
+              <br />
+              <!-- <h1 align="center">五笔打字练习</h1>
 							<p class="alert alert-info">
 								这是一款五笔打字练习工具，可选择一级（二级、三级、全码）简码、易错字、词语、文章以及英文进行打字练习<font color="#FF0000">[下有字根表]</font>。
 							</p> -->
-							<hr />
-							<div class="X_center">
-								<select id="selText" onchange="selectText();">
-									<optgroup label="中文">
-										<option value="data1">一级简码</option>
-										<option value="data2">二级简码</option>
-										<option value="data21">二级简码口诀1</option>
-										<option value="data22">二级简码口诀2</option>
-										<option value="data3">三级简码</option>
-										<option value="data4">全码</option>
-										<option value="data5">易错字</option>
-										<option value="data6">二字词语</option>
-										<option value="data7">三字词语</option>
-										<option value="data8">四字词语</option>
-										<option value="data9">多字词语</option>
-										<option value="data10">文章练习</option>
-									</optgroup>
-									<optgroup label="常用单字">
-										<option value="data12">前 500</option>
-										<option value="data13">中 500</option>
-										<option value="data14">后 500</option>
-										<option value="data15">前 1500</option>
-										<option value="data16">键名汉字</option>
-										<option value="data17">成字字根</option>
-										<option value="data18">偏旁部首</option>
-									</optgroup>
-									<optgroup label="英文">
-										<option value="data11">Three passions</option>
-									</optgroup>
-								</select>
-								　总字数:
-								<span id="spanAllNum">0</span>
-								键入字数:
-								<span id="spanNum">0</span>
-								错误数:
-								<span id="spanError">0</span>
-								正确率:
-								<span id="spanRate">0</span>
-								速度:
-								<span id="spanSpeed">0</span>
-								用时:
-								<span id="spanTime">0</span>
-							</div>
+              <hr />
+              <div class="X_center">
+                <select id="selText" onchange="selectText();">
+                  <optgroup label="中文">
+                    <option value="data1">一级简码</option>
+                    <option value="data2">二级简码</option>
+                    <option value="data21">二级简码口诀1</option>
+                    <option value="data22">二级简码口诀2</option>
+                    <option value="data3">三级简码</option>
+                    <option value="data4">全码</option>
+                    <option value="data5">易错字</option>
+                    <option value="data6">二字词语</option>
+                    <option value="data7">三字词语</option>
+                    <option value="data8">四字词语</option>
+                    <option value="data9">多字词语</option>
+                    <option value="data10">文章练习</option>
+                  </optgroup>
+                  <optgroup label="常用单字">
+                    <option value="data12">前 500</option>
+                    <option value="data13">中 500</option>
+                    <option value="data14">后 500</option>
+                    <option value="data15">前 1500</option>
+                    <option value="data16">键名汉字</option>
+                    <option value="data17">成字字根</option>
+                    <option value="data18">偏旁部首</option>
+                  </optgroup>
+                  <optgroup label="常用字笔画顺序表">
+                    <option value="usually1_1_5">一至五画</option>
+                    <option value="usually1_6">六画</option>
+                    <option value="usually1_7">七画</option>
+                    <option value="usually1_8">八画</option>
+                    <option value="usually1_9">九画</option>
+                    <option value="usually1_10">十画</option>
+                    <option value="usually1_11">十一画</option>
+                    <option value="usually1_12_13">十二至十三画</option>
+                    <option value="usually1_14_23">十四至二十三画</option>
+                  </optgroup>
+                  <optgroup label="次常用字笔画顺序表">
+                    <option value="usually2_2_9">二至九画</option>
+                    <option value="usually2_10_12">十至十二画</option>
+                    <option value="usually2_13_24">十三至二十四画</option>
+                  </optgroup>
+                  <optgroup label="英文">
+                    <option value="data11">Three passions</option>
+                  </optgroup>
+                </select>
+                　总字数:
+                <span id="spanAllNum">0</span>
+                键入字数:
+                <span id="spanNum">0</span>
+                错误数:
+                <span id="spanError">0</span>
+                正确率:
+                <span id="spanRate">0</span>
+                速度:
+                <span id="spanSpeed">0</span>
+                用时:
+                <span id="spanTime">0</span>
+              </div>
 
-							<div style="display: none">
-								<textarea id="data1"></textarea>
-								<textarea id="data2"></textarea>
-								<textarea id="data21"></textarea>
-								<textarea id="data22"></textarea>
-								<textarea id="data3"></textarea>
-								<textarea id="data4"></textarea>
-								<textarea id="data5"></textarea>
-								<textarea id="data6"></textarea>
-								<textarea id="data7"></textarea>
-								<textarea id="data8"></textarea>
-								<textarea id="data9"></textarea>
-								<textarea id="data10"></textarea>
-								<textarea id="data12"></textarea>
-								<textarea id="data13"></textarea>
-								<textarea id="data14"></textarea>
-								<textarea id="data15"></textarea>
-								<textarea id="data16"></textarea>
-								<textarea id="data17"></textarea>
-								<textarea id="data18"></textarea>
-								<textarea id="data11"></textarea>
-							</div>
+              <div style="display: none">
+                <textarea id="data1"></textarea>
+                <textarea id="data2"></textarea>
+                <textarea id="data21"></textarea>
+                <textarea id="data22"></textarea>
+                <textarea id="data3"></textarea>
+                <textarea id="data4"></textarea>
+                <textarea id="data5"></textarea>
+                <textarea id="data6"></textarea>
+                <textarea id="data7"></textarea>
+                <textarea id="data8"></textarea>
+                <textarea id="data9"></textarea>
+                <textarea id="data10"></textarea>
+                <textarea id="data12"></textarea>
+                <textarea id="data13"></textarea>
+                <textarea id="data14"></textarea>
+                <textarea id="data15"></textarea>
+                <textarea id="data16"></textarea>
+                <textarea id="data17"></textarea>
+                <textarea id="data18"></textarea>
+                <textarea id="data11"></textarea>
+                <textarea id="usually1_1_5"></textarea>
+                <textarea id="usually1_6"></textarea>
+                <textarea id="usually1_7"></textarea>
+                <textarea id="usually1_8"></textarea>
+                <textarea id="usually1_9"></textarea>
+                <textarea id="usually1_10"></textarea>
+                <textarea id="usually1_11"></textarea>
+                <textarea id="usually1_12_13"></textarea>
+                <textarea id="usually1_14_23"></textarea>
+                <textarea id="usually2_2_9"></textarea>
+                <textarea id="usually2_10_12"></textarea>
+                <textarea id="usually2_13_24"></textarea>
+              </div>
 
-							<div class="wrap">
-								<div id="divMain">
-									<textarea id="txtInput" disabled onkeyup="changeText();"></textarea>
-									<div id="divText" onclick="getObj('txtInput').focus();"></div>
-								</div>
-							</div>
-							<div class="line_D_div"><br /><img src="image/zaixianwubi.png" alt="练习字根表" /></div>
-						</div>
-					</div>
-				</div>
-			</main>
-		</div>
-		<br />
+              <div class="wrap">
+                <div id="divMain">
+                  <textarea id="txtInput" disabled onkeyup="changeText();"></textarea>
+                  <div id="divText" onclick="getObj('txtInput').focus();"></div>
+                </div>
+              </div>
+              <div class="line_D_div">
+                <br /><img src="image/zaixianwubi.png" alt="练习字根表" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="md-container"></div>
+      </main>
+    </div>
+    <br />
 
-		<!-- <div class="backtop">
+    <!-- <div class="backtop">
 			<a title="反回顶部">TOP</a>
 		</div> -->
-		<!-- <script type="text/javascript" src="js/leonhere.js"></script> -->
+    <!-- <script type="text/javascript" src="js/leonhere.js"></script> -->
 
-		<!-- 有用 -->
-		<script type="text/javascript" src="js/index.js"></script>
-	</body>
+    <!-- 有用 -->
+    <script type="text/javascript" src="js/index.js"></script>
+  </body>
 </html>
